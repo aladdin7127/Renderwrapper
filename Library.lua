@@ -46,7 +46,7 @@ end
 function Tabs:CheckBox(Settings:table, Callback)
     local CheckBox = self.Tab:CheckBox()
     CheckBox.Label = Settings.Label or "CheckBox"
-    CheckBox.Value = Settings.Default or false
+    CheckBox.Value = Settings.Value or false
     CheckBox.OnUpdated:Connect(Callback or function() end)
 
     return CheckBox
@@ -61,10 +61,15 @@ function Tabs:IntSlider(Settings:table, Callback)
     Slider.Label = Settings.Label or "IntSlider"
     Slider.Max = Settings.Max or 1
     Slider.Min = Settings.Min or 0
+    Slider.Value = Settings.Value or 0
     Slider.Clamped = Settings.Clamped or true
     Slider.OnUpdated:Connect(Callback or function() end)
 
     return Slider
+end
+
+function Tabs:Separator()
+    return self.Tab:Separator()
 end
 
 function Tabs:Slider(Settings:table, Callback)
@@ -72,6 +77,7 @@ function Tabs:Slider(Settings:table, Callback)
     Slider.Label = Settings.Label or "Slider"
     Slider.Max = Settings.Max or 1
     Slider.Min = Settings.Min or 0
+    Slider.Value = Settings.Value or 0
     Slider.Clamped = Settings.Clamped or true
     Slider.OnUpdated:Connect(Callback or function() end)
 
@@ -126,6 +132,7 @@ function Tabs:IntDrag(Settings:table, Callback)
     Drag.Speed = Settings.Speed or 1
     Drag.Min = Settings.Min or 0
     Drag.Max = Settings.Max or 1
+    Drag.Value = Settings.Value or 0
     Drag.Clamped = Settings.Clamped or true
     Drag.OnUpdated:Connect(Callback or function() end)
 
@@ -138,6 +145,7 @@ function Tabs:Drag(Settings:table, Callback)
     Drag.Speed = Settings.Speed or 1
     Drag.Min = Settings.Min or 0
     Drag.Max = Settings.Max or 1
+    Drag.Value = Settings.Value or 0
     Drag.Clamped = Settings.Clamped or true
     Drag.OnUpdated:Connect(Callback or function() end)
 
