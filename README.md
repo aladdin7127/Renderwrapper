@@ -6,7 +6,7 @@ Getting Loadstring
 local Library = loadstring(syn.request({Method = "GET", Url = "https://raw.githubusercontent.com/aladdin7127/Renderwrapper/main/Library.lua"}))()
 ```
 
-Creating UI Library Window
+Creating the Window
 
 ```lua
 local Window = Library.Create("WindowName", {MinSize = Vector2.new(300,400)} --[[Any Renderwindow property]])
