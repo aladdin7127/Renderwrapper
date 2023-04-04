@@ -104,3 +104,12 @@ Tab:Selectable({Label = "Selectable", Size = Vector2.new(100,25), Value = false,
     print(v)
 end)
 ```
+
+Loading Themes
+
+```lua
+local ThemeList = loadstring(syn.request({Method = "GET", Url = "https://raw.githubusercontent.com/aladdin7127/RenderStyles/main/ThemeManager/ThemeList.lua"}).Body)()
+Tab:Combo({Label = "Themes", Items = ThemeList}, function(v)
+    Window:SetTheme(ThemeList[v])
+end)
+```
