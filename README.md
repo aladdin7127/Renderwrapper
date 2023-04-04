@@ -1,4 +1,4 @@
-# Documentation for library
+# Documentation for retards
 
 Getting Loadstring
 
