@@ -1,7 +1,13 @@
+-- ik source is terrible i will rewrite another time
+
 local Library = {}
 Library.__index = Library
 local Tabs = {}
 Tabs.__index = Tabs
+local Samelines = {}
+Samelines.__index = Samelines
+local Collapsables = {}
+Collapsables.__index = Collapsables
 
 local ThemesRepo = "https://raw.githubusercontent.com/aladdin7127/RenderStyles/main/ThemeManager/Themes/%s.lua"
 local ThemeList = loadstring(syn.request({Method = "GET", Url = "https://raw.githubusercontent.com/aladdin7127/RenderStyles/main/ThemeManager/ThemeList.lua"}).Body)()
@@ -28,6 +34,42 @@ function Library:Tab(TabName:string)
     return Tabs.new(Tab)
 end
 
+function Library:ThemesTab(TabName:string)
+    local Tab = self.TabMenu:Add(TabName)
+
+    local ThemesCombo = Tab:Combo()
+    ThemesCombo.Label = "Themes"
+    ThemesCombo.Items = ThemeList
+    ThemesCombo.OnUpdated:Connect(function(v)
+        -- couldnt call the set theme function :(
+
+        local Colours, Style  = loadstring(syn.request({Method = "GET", Url = string.format(ThemesRepo, ThemesCombo.Items[v])}).Body)();Style = Style or {};
+        for i,v in Colours do
+            self.Window:SetColor(RenderColorOption[i], v.Colour, v.Alpha)
+        end
+    
+        for i,v in Style do
+            self.Window:SetStyle(RenderStyleOption[i], v)
+        end
+    end)
+
+    local Sameline = Tab:SameLine()
+
+    return Tabs.new(Tab)
+end
+
+function Tabs:SameLine()
+    local SameLine = self.Tab:SameLine()
+
+    return Samelines.new(SameLine)
+end
+
+function Tabs:Collapsable()
+    local Collapsable = self.Tab:Collapsable()
+
+    return Collapsable.new(Collapsable)
+end
+
 function Library:SetTheme(Name)
     local Colours, Style  = loadstring(syn.request({Method = "GET", Url = string.format(ThemesRepo, Name)}).Body)();Style = Style or {};
     for i,v in Colours do
@@ -39,14 +81,34 @@ function Library:SetTheme(Name)
     end
 end
 
+function Library:Toggle(value)
+    if not self.Window then return end
+    self.Window.Visible = value or not self.Window.Visible
+end
+
+function Library:Unload()
+    self.Window:Clear()
+    self.Window.Visible = false
+    self.Window = nil
+end
+
 function Tabs.new(Tab)
     return setmetatable({Tab = Tab}, Tabs)
 end
 
+function Samelines.new(Sameline)
+    return setmetatable({Sameline = Sameline}, Samelines)
+end
+
+function Collapsable.new(Collapsable)
+    return setmetatable({Collapsable = Collapsable}, Collapsables)
+end
+
 function Tabs:CheckBox(Settings:table, Callback)
     local CheckBox = self.Tab:CheckBox()
-    CheckBox.Label = Settings.Label or "CheckBox"
-    CheckBox.Value = Settings.Value or false
+    for i,v in Settings do
+        CheckBox[i] = v
+    end
     CheckBox.OnUpdated:Connect(Callback or function() end)
 
     return CheckBox
@@ -58,11 +120,9 @@ end
 
 function Tabs:IntSlider(Settings:table, Callback)
     local Slider = self.Tab:IntSlider()
-    Slider.Label = Settings.Label or "IntSlider"
-    Slider.Max = Settings.Max or 1
-    Slider.Min = Settings.Min or 0
-    Slider.Value = Settings.Value or 0
-    Slider.Clamped = Settings.Clamped or true
+    for i,v in Settings do
+        Slider[i] = v
+    end
     Slider.OnUpdated:Connect(Callback or function() end)
 
     return Slider
@@ -74,11 +134,9 @@ end
 
 function Tabs:Slider(Settings:table, Callback)
     local Slider = self.Tab:Slider()
-    Slider.Label = Settings.Label or "Slider"
-    Slider.Max = Settings.Max or 1
-    Slider.Min = Settings.Min or 0
-    Slider.Value = Settings.Value or 0
-    Slider.Clamped = Settings.Clamped or true
+    for i,v in Settings do
+        Slider[i] = v
+    end
     Slider.OnUpdated:Connect(Callback or function() end)
 
     return Slider
@@ -86,8 +144,9 @@ end
 
 function Tabs:Button(Settings:table, Callback)
     local Button = self.Tab:Button()
-    Button.Label = Settings.Label or "Button"
-    Button.Size = Settings.Size or Button.Size
+    for i,v in Settings do
+        Button[i] = v
+    end
     Button.OnUpdated:Connect(Callback or function() end)
 
     return Button
@@ -95,10 +154,9 @@ end
 
 function Tabs:ColorButton(Settings:table, Callback)
     local Button = self.Tab:ColorButton()
-    Button.Description = Settings.Description or Button.Description
-    Button.Size = Settings.Size or Button.Size
-    Button.Color = Settings.Color or Color3.new(1,1,1)
-    Button.Alpha = Settings.Alpha or 1
+    for i,v in Settings do
+        Button[i] = v
+    end
     Button.OnUpdated:Connect(Callback or function() end)
 
     return Button
@@ -106,11 +164,9 @@ end
 
 function Tabs:ColorPicker(Settings:table, Callback)
     local ColorPicker = self.Tab:ColorPicker()
-    ColorPicker.Label = Settings.Label or "ColorPicker"
-    ColorPicker.Color = Settings.Color or Color3.new(1,1,1)
-    ColorPicker.Alpha = Settings.Alpha or 1
-    ColorPicker.UseAlpha = Settings.UseAlpha or false
-    ColorPicker.ReturnInt = Settings.ReturnInt or true
+    for i,v in Settings do
+        ColorPicker[i] = v
+    end
     ColorPicker.OnUpdated:Connect(Callback or function() end)
 
     return ColorPicker
@@ -118,9 +174,9 @@ end
 
 function Tabs:Combo(Settings:table, Callback)
     local Combo = self.Tab:Combo()
-    Combo.Label = Settings.Label or "Combo"
-    Combo.Items = Settings.Items or {}
-    Combo.SelectedItem = Settings.SelectedItem or 1
+    for i,v in Settings do
+        Combo[i] = v
+    end
     Combo.OnUpdated:Connect(Callback or function() end)
 
     return Combo
@@ -128,12 +184,9 @@ end
 
 function Tabs:IntDrag(Settings:table, Callback)
     local Drag = self.Tab:IntDrag()
-    Drag.Label = Settings.Label or "IntDrag"
-    Drag.Speed = Settings.Speed or 1
-    Drag.Min = Settings.Min or 0
-    Drag.Max = Settings.Max or 1
-    Drag.Value = Settings.Value or 0
-    Drag.Clamped = Settings.Clamped or true
+    for i,v in Settings do
+        Drag[i] = v
+    end
     Drag.OnUpdated:Connect(Callback or function() end)
 
     return Drag
@@ -141,12 +194,9 @@ end
 
 function Tabs:Drag(Settings:table, Callback)
     local Drag = self.Tab:Drag()
-    Drag.Label = Settings.Label or "Drag"
-    Drag.Speed = Settings.Speed or 1
-    Drag.Min = Settings.Min or 0
-    Drag.Max = Settings.Max or 1
-    Drag.Value = Settings.Value or 0
-    Drag.Clamped = Settings.Clamped or true
+    for i,v in Settings do
+        Drag[i] = v
+    end
     Drag.OnUpdated:Connect(Callback or function() end)
 
     return Drag
@@ -154,9 +204,9 @@ end
 
 function Tabs:TextBox(Settings:table, Callback)
     local TextBox = self.Tab:TextBox()
-    TextBox.Label = Settings.Label or "Textbox"
-    TextBox.MaxTextLength = Settings.MaxTextLength or 16384
-    TextBox.Value = Settings.Value or TextBox.Value
+    for i,v in Settings do
+        TextBox[i] = v
+    end
     TextBox.OnUpdated:Connect(Callback or function() end)
 
     return TextBox
@@ -164,10 +214,251 @@ end
 
 function Tabs:Selectable(Settings:table, Callback)
     local Selectable = self.Tab:Selectable()
-    Selectable.Label = Settings.Label or "Selectable"
-    Selectable.Size = Settings.Size or Selectable.Size
-    Selectable.Value = Settings.Value or false
-    Selectable.Toggles = Settings.Toggles or true
+    for i,v in Settings do
+        Selectable[i] = v
+    end
+    Selectable.OnUpdated:Connect(Callback or function() end)
+
+    return Selectable
+end
+
+
+
+
+function Samelines:CheckBox(Settings:table, Callback)
+    local CheckBox = self.Sameline:CheckBox()
+    for i,v in Settings do
+        CheckBox[i] = v
+    end
+    CheckBox.OnUpdated:Connect(Callback or function() end)
+
+    return CheckBox
+end
+
+function Samelines:Label(Text:string)
+    return self.Sameline:Label(Text)
+end
+
+function Samelines:IntSlider(Settings:table, Callback)
+    local Slider = self.Sameline:IntSlider()
+    for i,v in Settings do
+        Slider[i] = v
+    end
+    Slider.OnUpdated:Connect(Callback or function() end)
+
+    return Slider
+end
+
+function Samelines:Separator()
+    return self.Sameline:Separator()
+end
+
+function Samelines:Slider(Settings:table, Callback)
+    local Slider = self.Sameline:Slider()
+    for i,v in Settings do
+        Slider[i] = v
+    end
+    Slider.OnUpdated:Connect(Callback or function() end)
+
+    return Slider
+end
+
+function Samelines:Button(Settings:table, Callback)
+    local Button = self.Sameline:Button()
+    for i,v in Settings do
+        Button[i] = v
+    end
+    Button.OnUpdated:Connect(Callback or function() end)
+
+    return Button
+end
+
+function Samelines:ColorButton(Settings:table, Callback)
+    local Button = self.Sameline:ColorButton()
+    for i,v in Settings do
+        Button[i] = v
+    end
+    Button.OnUpdated:Connect(Callback or function() end)
+
+    return Button
+end
+
+function Samelines:ColorPicker(Settings:table, Callback)
+    local ColorPicker = self.Sameline:ColorPicker()
+    for i,v in Settings do
+        ColorPicker[i] = v
+    end
+    ColorPicker.OnUpdated:Connect(Callback or function() end)
+
+    return ColorPicker
+end
+
+function Samelines:Combo(Settings:table, Callback)
+    local Combo = self.Sameline:Combo()
+    for i,v in Settings do
+        Combo[i] = v
+    end
+    Combo.OnUpdated:Connect(Callback or function() end)
+
+    return Combo
+end
+
+function Samelines:IntDrag(Settings:table, Callback)
+    local Drag = self.Sameline:IntDrag()
+    for i,v in Settings do
+        Drag[i] = v
+    end
+    Drag.OnUpdated:Connect(Callback or function() end)
+
+    return Drag
+end
+
+function Samelines:Drag(Settings:table, Callback)
+    local Drag = self.Sameline:Drag()
+    for i,v in Settings do
+        Drag[i] = v
+    end
+    Drag.OnUpdated:Connect(Callback or function() end)
+
+    return Drag
+end
+
+function Samelines:TextBox(Settings:table, Callback)
+    local TextBox = self.Sameline:TextBox()
+    for i,v in Settings do
+        TextBox[i] = v
+    end
+    TextBox.OnUpdated:Connect(Callback or function() end)
+
+    return TextBox
+end
+
+function Samelines:Selectable(Settings:table, Callback)
+    local Selectable = self.Sameline:Selectable()
+    for i,v in Settings do
+        Selectable[i] = v
+    end
+    Selectable.OnUpdated:Connect(Callback or function() end)
+
+    return Selectable
+end
+
+
+
+
+function Collapsables:CheckBox(Settings:table, Callback)
+    local CheckBox = self.Collapsable:CheckBox()
+    for i,v in Settings do
+        CheckBox[i] = v
+    end
+    CheckBox.OnUpdated:Connect(Callback or function() end)
+
+    return CheckBox
+end
+
+function Collapsables:Label(Text:string)
+    return self.Collapsable:Label(Text)
+end
+
+function Collapsables:IntSlider(Settings:table, Callback)
+    local Slider = self.Collapsable:IntSlider()
+    for i,v in Settings do
+        Slider[i] = v
+    end
+    Slider.OnUpdated:Connect(Callback or function() end)
+
+    return Slider
+end
+
+function Collapsables:Separator()
+    return self.Collapsable:Separator()
+end
+
+function Collapsables:Slider(Settings:table, Callback)
+    local Slider = self.Collapsable:Slider()
+    for i,v in Settings do
+        Slider[i] = v
+    end
+    Slider.OnUpdated:Connect(Callback or function() end)
+
+    return Slider
+end
+
+function Collapsables:Button(Settings:table, Callback)
+    local Button = self.Collapsable:Button()
+    for i,v in Settings do
+        Button[i] = v
+    end
+    Button.OnUpdated:Connect(Callback or function() end)
+
+    return Button
+end
+
+function Collapsables:ColorButton(Settings:table, Callback)
+    local Button = self.Collapsable:ColorButton()
+    for i,v in Settings do
+        Button[i] = v
+    end
+    Button.OnUpdated:Connect(Callback or function() end)
+
+    return Button
+end
+
+function Collapsables:ColorPicker(Settings:table, Callback)
+    local ColorPicker = self.Collapsable:ColorPicker()
+    for i,v in Settings do
+        ColorPicker[i] = v
+    end
+    ColorPicker.OnUpdated:Connect(Callback or function() end)
+
+    return ColorPicker
+end
+
+function Collapsables:Combo(Settings:table, Callback)
+    local Combo = self.Collapsable:Combo()
+    for i,v in Settings do
+        Combo[i] = v
+    end
+    Combo.OnUpdated:Connect(Callback or function() end)
+
+    return Combo
+end
+
+function Collapsables:IntDrag(Settings:table, Callback)
+    local Drag = self.Collapsable:IntDrag()
+    for i,v in Settings do
+        Drag[i] = v
+    end
+    Drag.OnUpdated:Connect(Callback or function() end)
+
+    return Drag
+end
+
+function Collapsables:Drag(Settings:table, Callback)
+    local Drag = self.Collapsable:Drag()
+    for i,v in Settings do
+        Drag[i] = v
+    end
+    Drag.OnUpdated:Connect(Callback or function() end)
+
+    return Drag
+end
+
+function Collapsables:TextBox(Settings:table, Callback)
+    local TextBox = self.Collapsable:TextBox()
+    for i,v in Settings do
+        TextBox[i] = v
+    end
+    TextBox.OnUpdated:Connect(Callback or function() end)
+
+    return TextBox
+end
+
+function Collapsables:Selectable(Settings:table, Callback)
+    local Selectable = self.Collapsable:Selectable()
+    for i,v in Settings do
+        Selectable[i] = v
+    end
     Selectable.OnUpdated:Connect(Callback or function() end)
 
     return Selectable
