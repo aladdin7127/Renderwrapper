@@ -1,4 +1,5 @@
-# Documentation for retards (pls dont look at src it was rushed)
+# Documentation for retards
+(pls dont look at src it was rushed)
 
 Getting Loadstring
 
