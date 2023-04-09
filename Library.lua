@@ -34,6 +34,14 @@ function Library:Tab(TabName:string)
     return Tabs.new(Tab)
 end
 
+function Library:SetColor(Option, Colour, Alpha)
+    self.Window:SetColor(Option, Colour, Alpha)
+end
+
+function Library:SetStyle(Option, Value)
+    self.Window:SetStyle(Option, Value)
+end
+
 function Library:ThemesTab(TabName:string)
     local Tab = self.TabMenu:Add(TabName)
 
