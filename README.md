@@ -4,7 +4,7 @@
 Getting Loadstring
 
 ```lua
-local Library = loadstring(syn.request({Method = "GET", Url = "https://raw.githubusercontent.com/aladdin7127/Renderwrapper/main/Library.lua"}))()
+local Library = loadstring(syn.request({Method = "GET", Url = "https://raw.githubusercontent.com/aladdin7127/Renderwrapper/main/Library.lua"}).Body)()
 ```
 
 Creating the Window
